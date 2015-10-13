@@ -8,41 +8,41 @@ import javax.swing.JFrame;
 
 public class MazeUI extends JFrame {
 
-    /**
+	/**
      * 
      */
-    private static final long serialVersionUID = 1L;
-    private static final long FRAME_INTERVAL = 16L;
+	private static final long serialVersionUID = 1L;
+	private static final long FRAME_INTERVAL = 16L;
 
-    private final MazePanel mazePanel;
+	private final MazePanel mazePanel;
 
-    public MazeUI(final Maze maze) {
-	mazePanel = new MazePanel(maze);
+	public MazeUI(final Maze maze) {
+		mazePanel = new MazePanel(maze);
 
-	Container contentPanel = getContentPane();
-	contentPanel.setLayout(new BorderLayout());
-	contentPanel.add(mazePanel, BorderLayout.CENTER);
+		Container contentPanel = getContentPane();
+		contentPanel.setLayout(new BorderLayout());
+		contentPanel.add(mazePanel, BorderLayout.CENTER);
 
-	pack();
-    }
+		pack();
+	}
 
-    public void start() {
-	setVisible(true);
+	public void start() {
+		setVisible(true);
 
-	ScheduledExecutorService service = Executors
-		.newSingleThreadScheduledExecutor();
+		ScheduledExecutorService service = Executors
+				.newSingleThreadScheduledExecutor();
 
-	service.scheduleAtFixedRate(new Runnable() {
+		service.scheduleAtFixedRate(new Runnable() {
 
-	    @Override
-	    public void run() {
-		nextFrame();
-	    }
-	}, 0, FRAME_INTERVAL, TimeUnit.MILLISECONDS);
+			@Override
+			public void run() {
+				nextFrame();
+			}
+		}, 0, FRAME_INTERVAL, TimeUnit.MILLISECONDS);
 
-    }
+	}
 
-    private void nextFrame() {
-	mazePanel.repaint();
-    }
+	private void nextFrame() {
+		mazePanel.repaint();
+	}
 }

@@ -1,4 +1,8 @@
-
+/**
+ * 
+ * @author Luke
+ *
+ */
 public class Ant {
 	private double ph;
 	private int x;
