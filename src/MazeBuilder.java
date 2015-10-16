@@ -16,13 +16,25 @@ public class MazeBuilder {
 	}
 
 	public void launch() {
-		readCoordinates("res/easy coordinates.txt");
-		maze = readFile("res/easy maze.txt");
+		readCoordinates("res/medium coordinates.txt");
+		maze = readFile("res/medium maze.txt");
 //	readCoordinates("res/INSANE start-finish.txt");
 //		maze = readFile("res/INSANE");
 		
 		ui = new MazeUI(maze);
 		ui.start();
+		
+		int width = maze.getWidth();
+		int height = maze.getHeight();	
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				Square s = maze.getMaze()[x][y];
+				if (s instanceof Path) {
+					Path p = (Path) s;
+					p.printNeighbours();
+				}
+			}
+		}
 	}
 
 	/**
@@ -40,13 +52,53 @@ public class MazeBuilder {
 			for (int y = 0; y < height; y++) {
 				if (data.get(y).charAt(x) == '1') {
 					maze[x][y] = new Path();
+					maze[x][y].setX(x);
+					maze[x][y].setY(y);
 				} else {
 					maze[x][y] = new Wall();
 				}
 
 			}
 		}
-		return new Maze(maze, start, end);
+		Maze m = new Maze(maze, start, end);
+		setNeighbours(m);
+		return m;
+	}
+	
+	public void setNeighbours(Maze maze) {
+		Square[][] squares = maze.getMaze();
+		int width = maze.getWidth();
+		int height = maze.getHeight();
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				Square s = squares[x][y];
+				if (s instanceof Path) {
+					Path p = (Path) s;
+					if (x + 1 < width) {
+						Square n = squares[x + 1][y];
+						if (n instanceof Path) {
+							p.addNeighbour((Path) n);
+						}
+					} if (x - 1 >= 0) {
+						Square n = squares[x - 1][y];
+						if (n instanceof Path) {
+							p.addNeighbour((Path) n);
+						}
+					} if (y - 1 >= 0) {
+						Square n = squares[x][y - 1];
+						if (n instanceof Path) {
+							p.addNeighbour((Path) n);
+						}
+					} if (y + 1 < height) {
+						Square n = squares[x][y + 1];
+						if (n instanceof Path) {
+							p.addNeighbour((Path) n);
+						}
+					}
+				}
+			}
+		}
+		
 	}
 
 	/**

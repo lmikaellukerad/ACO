@@ -45,13 +45,23 @@ public class MazePanel extends JPanel {
 				int cellY = y * cellH;
 				Square square = maze.squareAt(x, y);
 				if (square instanceof Path) {
-					g.setColor(Color.WHITE);
+					Path path = (Path) square;
+					if (path.getNeighbours().size() > 2) {
+						g.setColor(Color.YELLOW);
+					} else {
+						g.setColor(Color.WHITE);
+					}
+					
 				} else {
 					g.setColor(Color.BLACK);
 				}
 				if (maze.getStart().getX() == x &&
 						maze.getStart().getY() == y) {
 					g.setColor(Color.BLUE);
+				}
+				if (maze.getEnd().getX() == x &&
+						maze.getEnd().getY() == y) {
+					g.setColor(Color.RED);
 				}
 				if (maze.getEnd().getX() == x &&
 						maze.getEnd().getY() == y) {
