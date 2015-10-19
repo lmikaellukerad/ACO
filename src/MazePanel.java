@@ -17,7 +17,7 @@ public class MazePanel extends JPanel {
      * 
      */
 	private static final long serialVersionUID = 1L;
-	private static final int SQUARE_SIZE = 12;
+	private static final int SQUARE_SIZE = 9;
 	private static final Color BACKGROUND_COLOR = Color.BLACK;
 	private Colony maze;
 
@@ -64,7 +64,7 @@ public class MazePanel extends JPanel {
 		
 		BufferedImage image = null;
 		try {
-			image = ImageIO.read(new File("res/pellet.png"));
+			image = ImageIO.read(new File("res/ant.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
@@ -82,6 +82,9 @@ public class MazePanel extends JPanel {
 						maximum = path.getPheremone();
 					}
 					g.setColor(new Color(1f, (float) Math.min(1f, path.getPheremone() / maximum), 1f));
+					if (colony.getPath().contains(path)) {
+						g.setColor(Color.GREEN);
+					}
 					
 				} else {
 					g.setColor(Color.BLACK);
@@ -94,7 +97,7 @@ public class MazePanel extends JPanel {
 						maze.getEnd().getY() == y) {
 					g.setColor(Color.RED);
 				}
-			
+				
 				g.fillRect(cellX, cellY, cellW, cellH);
 				for (Ant a : ants) {
 					if (a.getCurrent().equals(square)) {

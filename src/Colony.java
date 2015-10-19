@@ -4,16 +4,18 @@ public class Colony {
 
 	private Maze maze;
 	private ArrayList<Ant> ants;
+	private ArrayList<Path> path;
 
 	private final double initialPheremone = 10000;
 	private final int antsNumber = 1000;
-	private final int maximumIterations = 10;
+	private final int maximumIterations = 100;
 	private final int maximumDistance = 10000;
 	private final double evaporationConstant = 0.1;
 	private final int delay = 0;
 
 	public Colony(Maze maze) {
 		setMaze(maze);
+		setPath(new ArrayList<Path>());
 		initialize();
 	}
 
@@ -69,11 +71,15 @@ public class Colony {
 					}
 				}
 			}
+			if (shortest < 200) {
+				break;
+			}
 			System.out.println(completed);
 			initialize();
 		}
 		System.out.println("Shortest path:");
 		System.out.println(shortest);
+		setPath(path);
 		return path;
 	}
 
@@ -105,6 +111,14 @@ public class Colony {
 	 */
 	public final void setAnts(ArrayList<Ant> ants) {
 		this.ants = ants;
+	}
+
+	public ArrayList<Path> getPath() {
+		return path;
+	}
+
+	public void setPath(ArrayList<Path> shortest) {
+		this.path = shortest;
 	}
 
 }
