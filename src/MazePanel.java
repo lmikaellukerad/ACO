@@ -1,7 +1,14 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 public class MazePanel extends JPanel {
@@ -10,20 +17,34 @@ public class MazePanel extends JPanel {
      * 
      */
 	private static final long serialVersionUID = 1L;
-	private static final int SQUARE_SIZE = 10;
+	private static final int SQUARE_SIZE = 12;
 	private static final Color BACKGROUND_COLOR = Color.BLACK;
-	private Maze maze;
+	private Colony maze;
 
-	public MazePanel(final Maze maze) {
+	public MazePanel(final Colony colony) {
 		super();
-		this.maze = maze;
+		this.maze = colony;
 
-		int w = maze.getWidth() * SQUARE_SIZE;
-		int h = maze.getHeight() * SQUARE_SIZE;
+		int w = maze.getMaze().getWidth() * SQUARE_SIZE;
+		int h = maze.getMaze().getHeight() * SQUARE_SIZE;
 
 		Dimension size = new Dimension(w, h);
 		setMinimumSize(size);
 		setPreferredSize(size);
+	}
+
+	/**
+	 * @return the maze
+	 */
+	public final Colony getMaze() {
+		return maze;
+	}
+
+	/**
+	 * @param maze the maze to set
+	 */
+	public final void setMaze(Colony maze) {
+		this.maze = maze;
 	}
 
 	@Override
@@ -31,26 +52,36 @@ public class MazePanel extends JPanel {
 		assert g != null;
 		draw(maze, g, getSize());
 	}
-
-	public void draw(Maze maze, Graphics g, Dimension window) {
+	
+	public void draw(Colony colony, Graphics g, Dimension window) {
+		Maze maze = colony.getMaze();
+		ArrayList<Ant> ants = colony.getAnts();
 		int cellW = window.width / maze.getWidth();
 		int cellH = window.height / maze.getHeight();
-
+		double maximum = 10;
 		g.setColor(BACKGROUND_COLOR);
 		g.fillRect(0, 0, window.width, window.height);
-
+		
+		BufferedImage image = null;
+		try {
+			image = ImageIO.read(new File("res/pellet.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
+		
 		for (int y = 0; y < maze.getHeight(); y++) {
+
 			for (int x = 0; x < maze.getWidth(); x++) {
 				int cellX = x * cellW;
 				int cellY = y * cellH;
+
 				Square square = maze.squareAt(x, y);
 				if (square instanceof Path) {
 					Path path = (Path) square;
-					if (path.getNeighbours().size() > 2) {
-						g.setColor(Color.YELLOW);
-					} else {
-						g.setColor(Color.WHITE);
+					if (path.getPheremone() > maximum && path.getPheremone() > 0.5) {
+						maximum = path.getPheremone();
 					}
+					g.setColor(new Color(1f, (float) Math.min(1f, path.getPheremone() / maximum), 1f));
 					
 				} else {
 					g.setColor(Color.BLACK);
@@ -63,11 +94,14 @@ public class MazePanel extends JPanel {
 						maze.getEnd().getY() == y) {
 					g.setColor(Color.RED);
 				}
-				if (maze.getEnd().getX() == x &&
-						maze.getEnd().getY() == y) {
-					g.setColor(Color.RED);
-				}
+			
 				g.fillRect(cellX, cellY, cellW, cellH);
+				for (Ant a : ants) {
+					if (a.getCurrent().equals(square)) {
+						//System.out.println("draw");
+						g.drawImage(image, cellX, cellY, cellW, cellH, null);
+					}
+				}
 			}
 		}
 	}

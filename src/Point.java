@@ -1,3 +1,9 @@
+
+/**
+ * Class representing a point in 2d space.
+ * @author Luke
+ *
+ */
 public class Point {
 	private int x;
 	private int y;
@@ -17,7 +23,6 @@ public class Point {
 
 	public String toString() {
 		String s = "x: " + x + " y: " + y;
-		System.out.println("x: " + x + " y: " + y);
 		return s;
 	}
 

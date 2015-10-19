@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -10,31 +11,58 @@ public class MazeBuilder {
 	private Point end;
 	private MazeUI ui;
 	private ArrayList<String> data = new ArrayList<String>();
+	private final String difficulty = "medium";
 
 	public static void main(String[] args) {
 		new MazeBuilder().launch();
 	}
 
 	public void launch() {
-		readCoordinates("res/medium coordinates.txt");
-		maze = readFile("res/medium maze.txt");
-//	readCoordinates("res/INSANE start-finish.txt");
-//		maze = readFile("res/INSANE");
-		
-		ui = new MazeUI(maze);
+		start = readStartCoordinates("res/" + difficulty + " coordinates.txt");
+		end = readEndCoordinates("res/" + difficulty + " coordinates.txt");
+		maze = readFile("res/" + difficulty + " maze.txt");
+
+		Colony colony = new Colony(maze);
+		ui = new MazeUI(colony);
 		ui.start();
-		
-		int width = maze.getWidth();
-		int height = maze.getHeight();	
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				Square s = maze.getMaze()[x][y];
-				if (s instanceof Path) {
-					Path p = (Path) s;
-					p.printNeighbours();
-				}
+		writeFile(colony.runAnt());
+	}
+
+	public void writeFile(ArrayList<Path> path) {
+		ArrayList<Integer> actions = translatePath(path);
+		try {
+			FileWriter writer = new FileWriter("actions.txt", false);
+			writer.write(actions.size() + ";");
+			writer.write("\r\n"); // write new line
+			writer.write(start.getX() + ", " + start.getY() + ";");
+			writer.write("\r\n");
+			for (int i : actions) {
+				writer.write(i + ";");
+			}
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private ArrayList<Integer> translatePath(ArrayList<Path> path) {
+		ArrayList<Integer> actions = new ArrayList<Integer>();
+		for (int i = 0; i < path.size() - 1; i++) {
+			Path current = path.get(i);
+			Path next = path.get(i + 1);
+			if (next.getX() > current.getX()) {
+				actions.add(0);
+			} else if (next.getY() > current.getY()) {
+				actions.add(1);
+			} else if (next.getX() < current.getX()) {
+				actions.add(2);
+			} else if (next.getY() < current.getY()) {
+				actions.add(3);
 			}
 		}
+		return actions;
+
 	}
 
 	/**
@@ -54,6 +82,7 @@ public class MazeBuilder {
 					maze[x][y] = new Path();
 					maze[x][y].setX(x);
 					maze[x][y].setY(y);
+					((Path) maze[x][y]).setPheremone(1);
 				} else {
 					maze[x][y] = new Wall();
 				}
@@ -64,7 +93,7 @@ public class MazeBuilder {
 		setNeighbours(m);
 		return m;
 	}
-	
+
 	public void setNeighbours(Maze maze) {
 		Square[][] squares = maze.getMaze();
 		int width = maze.getWidth();
@@ -79,17 +108,20 @@ public class MazeBuilder {
 						if (n instanceof Path) {
 							p.addNeighbour((Path) n);
 						}
-					} if (x - 1 >= 0) {
+					}
+					if (x - 1 >= 0) {
 						Square n = squares[x - 1][y];
 						if (n instanceof Path) {
 							p.addNeighbour((Path) n);
 						}
-					} if (y - 1 >= 0) {
+					}
+					if (y - 1 >= 0) {
 						Square n = squares[x][y - 1];
 						if (n instanceof Path) {
 							p.addNeighbour((Path) n);
 						}
-					} if (y + 1 < height) {
+					}
+					if (y + 1 < height) {
 						Square n = squares[x][y + 1];
 						if (n instanceof Path) {
 							p.addNeighbour((Path) n);
@@ -98,7 +130,7 @@ public class MazeBuilder {
 				}
 			}
 		}
-		
+
 	}
 
 	/**
@@ -109,8 +141,7 @@ public class MazeBuilder {
 	 */
 	public Maze readFile(String location) {
 		try {
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(
-					location));
+			BufferedReader bufferedReader = new BufferedReader(new FileReader(location));
 			String line = bufferedReader.readLine();
 			data.add(line);
 			while ((line = bufferedReader.readLine()) != null) {
@@ -124,23 +155,36 @@ public class MazeBuilder {
 		return parseMaze();
 	}
 
-	public void readCoordinates(String location) {
+	public Point readStartCoordinates(String location) {
+		Point p = null;
 		try {
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(
-					location));
+			BufferedReader bufferedReader = new BufferedReader(new FileReader(location));
 			String line = bufferedReader.readLine();
 			line = line.replaceAll(",", "");
 			line = line.replaceAll(";", "");
 			String[] format = line.split("\\s+");
-			start = new Point(Integer.parseInt(format[0]), Integer.parseInt(format[1]));
-			line = bufferedReader.readLine();
-			line = line.replaceAll(",", "");
-			line = line.replaceAll(";", "");
-			format = line.split("\\s+");
-			end = new Point(Integer.parseInt(format[0]), Integer.parseInt(format[1]));
 			bufferedReader.close();
+			p = new Point(Integer.parseInt(format[0]), Integer.parseInt(format[1]));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return p;
+	}
+
+	public Point readEndCoordinates(String location) {
+		Point p = null;
+		try {
+			BufferedReader bufferedReader = new BufferedReader(new FileReader(location));
+			String line = bufferedReader.readLine();
+			line = bufferedReader.readLine();
+			line = line.replaceAll(",", "");
+			line = line.replaceAll(";", "");
+			String[] format = line.split("\\s+");
+			bufferedReader.close();
+			p = new Point(Integer.parseInt(format[0]), Integer.parseInt(format[1]));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return p;
 	}
 }

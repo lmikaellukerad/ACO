@@ -16,9 +16,12 @@ public class MazeUI extends JFrame {
 
 	private final MazePanel mazePanel;
 
-	public MazeUI(final Maze maze) {
-		mazePanel = new MazePanel(maze);
-
+	public MazeUI(final Colony colony) {
+		mazePanel = new MazePanel(colony);
+		//mazePanel.getMaze().runAnt();
+		
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
 		Container contentPanel = getContentPane();
 		contentPanel.setLayout(new BorderLayout());
 		contentPanel.add(mazePanel, BorderLayout.CENTER);
@@ -28,7 +31,7 @@ public class MazeUI extends JFrame {
 
 	public void start() {
 		setVisible(true);
-
+		
 		ScheduledExecutorService service = Executors
 				.newSingleThreadScheduledExecutor();
 

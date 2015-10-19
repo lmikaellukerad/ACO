@@ -70,4 +70,27 @@ public class Maze {
 	public Square squareAt(int x, int y) {
 		return maze[x][y];
 	}
+	
+	public Square squareAt(Point p) {
+		return maze[p.getX()][p.getY()];
+	}
+	
+	public Path startPath() {
+		return (Path) squareAt(start);
+	}
+	
+	public Path endPath() {
+		return (Path) squareAt(end);
+	}
+	
+	public void decreasePheremones(double factor) {
+		for (Square[] m : maze) {
+			for (Square s : m) {
+				if (s instanceof Path) {
+					Path p = (Path) s;
+					p.decreasePheremone(factor);
+				}
+			}
+		}
+	}
 }
