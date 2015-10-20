@@ -150,7 +150,7 @@ public class MazeBuilder {
 			}
 			bufferedReader.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("File not found");
 		}
 		return parseMaze();
 	}
@@ -166,7 +166,7 @@ public class MazeBuilder {
 			bufferedReader.close();
 			p = new Point(Integer.parseInt(format[0]), Integer.parseInt(format[1]));
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("File not found");
 		}
 		return p;
 	}
@@ -183,7 +183,7 @@ public class MazeBuilder {
 			bufferedReader.close();
 			p = new Point(Integer.parseInt(format[0]), Integer.parseInt(format[1]));
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("File not found");
 		}
 		return p;
 	}

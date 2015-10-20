@@ -19,6 +19,7 @@ public class MazePanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static final int SQUARE_SIZE = 9;
 	private static final Color BACKGROUND_COLOR = Color.BLACK;
+	private final boolean drawAnts = false;
 	private Colony maze;
 
 	public MazePanel(final Colony colony) {
@@ -41,7 +42,8 @@ public class MazePanel extends JPanel {
 	}
 
 	/**
-	 * @param maze the maze to set
+	 * @param maze
+	 *            the maze to set
 	 */
 	public final void setMaze(Colony maze) {
 		this.maze = maze;
@@ -52,7 +54,7 @@ public class MazePanel extends JPanel {
 		assert g != null;
 		draw(maze, g, getSize());
 	}
-	
+
 	public void draw(Colony colony, Graphics g, Dimension window) {
 		Maze maze = colony.getMaze();
 		ArrayList<Ant> ants = colony.getAnts();
@@ -61,14 +63,14 @@ public class MazePanel extends JPanel {
 		double maximum = 10;
 		g.setColor(BACKGROUND_COLOR);
 		g.fillRect(0, 0, window.width, window.height);
-		
+
 		BufferedImage image = null;
 		try {
 			image = ImageIO.read(new File("res/ant.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
-		}	
-		
+		}
+
 		for (int y = 0; y < maze.getHeight(); y++) {
 
 			for (int x = 0; x < maze.getWidth(); x++) {
@@ -78,31 +80,32 @@ public class MazePanel extends JPanel {
 				Square square = maze.squareAt(x, y);
 				if (square instanceof Path) {
 					Path path = (Path) square;
-					if (path.getPheremone() > maximum && path.getPheremone() > 0.5) {
+					if (path.getPheremone() > maximum
+							&& path.getPheremone() > 0.5) {
 						maximum = path.getPheremone();
 					}
-					g.setColor(new Color(1f, (float) Math.min(1f, path.getPheremone() / maximum), 1f));
+					g.setColor(new Color(1f, (float) Math.min(1f,
+							path.getPheremone() / maximum), 1f));
 					if (colony.getPath().contains(path)) {
 						g.setColor(Color.GREEN);
 					}
-					
+
 				} else {
 					g.setColor(Color.BLACK);
 				}
-				if (maze.getStart().getX() == x &&
-						maze.getStart().getY() == y) {
+				if (maze.getStart().getX() == x && maze.getStart().getY() == y) {
 					g.setColor(Color.BLUE);
 				}
-				if (maze.getEnd().getX() == x &&
-						maze.getEnd().getY() == y) {
+				if (maze.getEnd().getX() == x && maze.getEnd().getY() == y) {
 					g.setColor(Color.RED);
 				}
-				
+
 				g.fillRect(cellX, cellY, cellW, cellH);
-				for (Ant a : ants) {
-					if (a.getCurrent().equals(square)) {
-						//System.out.println("draw");
-						g.drawImage(image, cellX, cellY, cellW, cellH, null);
+				if (drawAnts) {
+					for (Ant a : ants) {
+						if (a.getCurrent().equals(square)) {
+							g.drawImage(image, cellX, cellY, cellW, cellH, null);
+						}
 					}
 				}
 			}

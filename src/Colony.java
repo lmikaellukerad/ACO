@@ -8,7 +8,7 @@ public class Colony {
 
 	private final double initialPheremone = 10000;
 	private final int antsNumber = 1000;
-	private final int maximumIterations = 100;
+	private final int maximumIterations = 10;
 	private final int maximumDistance = 10000;
 	private final double evaporationConstant = 0.1;
 	private final int delay = 0;
@@ -42,6 +42,7 @@ public class Colony {
 	 */
 	public final ArrayList<Path> runAnt() {
 		int shortest = maximumDistance;
+		double startTime = System.currentTimeMillis();
 		ArrayList<Path> path = new ArrayList<Path>();
 		for (int i = 0; i < maximumIterations; i++) {
 			int completed = 0;
@@ -71,14 +72,16 @@ public class Colony {
 					}
 				}
 			}
-			if (shortest < 200) {
-				break;
-			}
+//			if (shortest < 200) {
+//				break;
+//			}
 			System.out.println(completed);
 			initialize();
 		}
 		System.out.println("Shortest path:");
 		System.out.println(shortest);
+		System.out.println("Time taken:");
+		System.out.println((System.currentTimeMillis() - startTime) / 1000 + "seconds");
 		setPath(path);
 		return path;
 	}
