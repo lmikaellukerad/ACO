@@ -1,28 +1,31 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Colony {
 
 	private Maze maze;
 	private ArrayList<Ant> ants;
 	private ArrayList<Path> path;
+	private HashSet<Path> denied;
 
-	private final double initialPheremone = 10000;
-	private final int antsNumber = 1000;
-	private final int maximumIterations = 10;
-	private final int maximumDistance = 10000;
+	private final double initialPheremone = 4000;
+	private final int antsNumber = 100;
+	private final int maximumIterations = 1000;
+	private final int maximumDistance = 3000;
 	private final double evaporationConstant = 0.1;
 	private final int delay = 0;
 
 	public Colony(Maze maze) {
 		setMaze(maze);
 		setPath(new ArrayList<Path>());
+		setDenied(new HashSet<Path>());
 		initialize();
 	}
 
 	private void initialize() {
 		ants = new ArrayList<Ant>();
 		for (int i = 0; i < antsNumber; i++) {
-			Ant a = new Ant(initialPheremone, maze.startPath(), maze.endPath());
+			Ant a = new Ant(initialPheremone, maze.startPath(), maze.endPath(), denied);
 			ants.add(a);
 		}
 	}
@@ -122,6 +125,20 @@ public class Colony {
 
 	public void setPath(ArrayList<Path> shortest) {
 		this.path = shortest;
+	}
+
+	/**
+	 * @return the denied
+	 */
+	public final HashSet<Path> getDenied() {
+		return denied;
+	}
+
+	/**
+	 * @param denied the denied to set
+	 */
+	public final void setDenied(HashSet<Path> denied) {
+		this.denied = denied;
 	}
 
 }

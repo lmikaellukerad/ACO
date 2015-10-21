@@ -20,7 +20,7 @@ public class Path extends Square {
 	}
 	
 	public void decreasePheremone(double factor) {
-		setPheremone(Math.max(0, pheremone * (1 - factor)));
+		setPheremone(Math.max(0.1, pheremone * (1 - factor)));
 	}
 	
 	public void increasePheremone(double factor) {
@@ -65,11 +65,11 @@ public class Path extends Square {
 	
 	public boolean isOpen() {
 		for (Path p : neighbours) {
-			if (p.getNeighbours().size() < 3) {
+			if ((p.getNeighbours().size() - 1) < 3) {
 				return false;
 			}
 		}
-		return true;
+		return isIntersection();
 	}
 	
 	public boolean equals(Object o) {

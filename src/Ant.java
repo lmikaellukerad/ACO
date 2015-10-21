@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Random;
 
@@ -9,19 +10,19 @@ import java.util.Random;
  */
 public class Ant {
 	private ArrayList<Path> list;
-	private ArrayList<Path> denied;
+	private HashSet<Path> denied;
 	private ArrayList<Integer> actions;
 	private Path current;
 	private Path previous;
 	private Path destination;
 	private double p;
 
-	public Ant(double pheromones, Path path, Path destination) {
+	public Ant(double pheromones, Path path, Path destination, HashSet<Path> denied) {
 		p = pheromones;
 		visit(path);
 		this.destination = destination;
 		list = new ArrayList<Path>();
-		denied = new ArrayList<Path>();
+		this.denied = denied;
 	}
 
 	public void update() {
@@ -30,13 +31,15 @@ public class Ant {
 		if (!arrived()) {
 			ArrayList<Path> neighbours = current.getNeighbours();
 			ArrayList<Path> potential = new ArrayList<Path>();
-			if (current.isClosed()) {
-				abort();
-			}
+
 			for (Path n : neighbours) {
-				// if (!list.contains(n) && !denied.contains(n)) {
-				if (!n.equals(previous)) {
-					// if (!n.equals(previous) && !denied.contains(n)) {
+
+//				if (!n.equals(previous) 
+//						&& !n.isClosed() 
+//						&& !denied.contains(n)
+//						&& !n.isOpen()) {
+				if (!n.equals(previous)
+						&& !denied.contains(n)) {
 					if (!n.isVisited()) {
 						visit(n);
 						return;
@@ -51,6 +54,13 @@ public class Ant {
 					}
 				}
 			}
+			if (potential.size() < 1) {
+				back();
+			}
+//			if (potential.size() == 1) {
+//				if (list.contains(potential.get(0)))
+//					back();
+//			}
 			double random = new Random().nextDouble();
 			for (Path n : potential) {
 
@@ -100,6 +110,13 @@ public class Ant {
 		} else {
 			abort();
 		}
+	}
+	
+	private void back() {
+		denied.add(current);
+		current = list.get(list.size() - 1);
+		list.remove(list.size() - 1);
+		previous = list.get(list.size() - 1);
 	}
 
 	public boolean arrived() {

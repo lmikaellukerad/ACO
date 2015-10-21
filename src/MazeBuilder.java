@@ -11,7 +11,7 @@ public class MazeBuilder {
 	private Point end;
 	private MazeUI ui;
 	private ArrayList<String> data = new ArrayList<String>();
-	private final String difficulty = "medium";
+	private final String difficulty = "hard";
 
 	public static void main(String[] args) {
 		new MazeBuilder().launch();
