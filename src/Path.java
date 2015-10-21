@@ -1,13 +1,16 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 
 
 public class Path extends Square {
 	private double pheremone;
 	private ArrayList<Path> neighbours;
+	private ArrayList<Wall> surrounding;
 	private boolean visited;
 
 	public Path() {
 		neighbours = new ArrayList<Path>();
+		surrounding = new ArrayList<Wall>();
 		visited = false;
 	}
 	
@@ -20,7 +23,7 @@ public class Path extends Square {
 	}
 	
 	public void decreasePheremone(double factor) {
-		setPheremone(Math.max(0.1, pheremone * (1 - factor)));
+		setPheremone(Math.max(1, pheremone * (1 - factor)));
 	}
 	
 	public void increasePheremone(double factor) {
@@ -41,35 +44,30 @@ public class Path extends Square {
 		return neighbours;
 	}
 
+	public void addSurrounding(Wall wall) {
+		surrounding.add(wall);
+	}
+	
+	/**
+	 * @return the surrounding
+	 */
+	public ArrayList<Wall> getSurrounding() {
+		return surrounding;
+	}
+
+	/**
+	 * @param surrounding the surrounding to set
+	 */
+	public void setSurrounding(ArrayList<Wall> surrounding) {
+		this.surrounding = surrounding;
+	}
+
 	public boolean isVisited() {
 		return visited;
 	}
 
 	public void setVisited(boolean visited) {
 		this.visited = visited;
-	}
-	
-	public boolean isIntersection() {
-		if (neighbours.size() > 2) {
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean isClosed() {
-		if (neighbours.size() < 2) {
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean isOpen() {
-		for (Path p : neighbours) {
-			if ((p.getNeighbours().size() - 1) < 3) {
-				return false;
-			}
-		}
-		return isIntersection();
 	}
 	
 	public boolean equals(Object o) {

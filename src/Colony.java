@@ -8,9 +8,9 @@ public class Colony {
 	private ArrayList<Path> path;
 	private HashSet<Path> denied;
 
-	private final double initialPheremone = 4000;
+	private final double initialPheremone = 2000;
 	private final int antsNumber = 100;
-	private final int maximumIterations = 1000;
+	private final int maximumIterations = 100;
 	private final int maximumDistance = 3000;
 	private final double evaporationConstant = 0.1;
 	private final int delay = 0;
@@ -25,7 +25,8 @@ public class Colony {
 	private void initialize() {
 		ants = new ArrayList<Ant>();
 		for (int i = 0; i < antsNumber; i++) {
-			Ant a = new Ant(initialPheremone, maze.startPath(), maze.endPath(), denied);
+			Ant a = new Ant(initialPheremone, maze.startPath(), maze.endPath(),
+					denied);
 			ants.add(a);
 		}
 	}
@@ -41,14 +42,17 @@ public class Colony {
 
 	/**
 	 * Main algorithm.
+	 * 
 	 * @return shortest found path in list
 	 */
 	public final ArrayList<Path> runAnt() {
-		int shortest = maximumDistance;
+		int shortestTotal = maximumDistance;
 		double startTime = System.currentTimeMillis();
 		ArrayList<Path> path = new ArrayList<Path>();
 		for (int i = 0; i < maximumIterations; i++) {
 			int completed = 0;
+			int shortest = maximumDistance;
+			Ant best = null;
 			for (int j = 0; j < maximumDistance; j++) {
 				try {
 					Thread.sleep(delay);
@@ -68,23 +72,28 @@ public class Colony {
 			for (Ant a : ants) {
 				if (a.arrived()) {
 					completed++;
-					a.updatePheremones();
+					
 					if (a.getList().size() < shortest) {
+						best = a;
 						shortest = a.getList().size();
-						path = a.getList();
+						if (shortest < shortestTotal) {
+							shortestTotal = shortest;
+							path = a.getList();
+						}
 					}
 				}
 			}
-//			if (shortest < 200) {
-//				break;
-//			}
+			if (best != null) {
+				best.updatePheremones();
+			}
 			System.out.println(completed);
 			initialize();
 		}
 		System.out.println("Shortest path:");
-		System.out.println(shortest);
+		System.out.println(shortestTotal);
 		System.out.println("Time taken:");
-		System.out.println((System.currentTimeMillis() - startTime) / 1000 + "seconds");
+		System.out.println((System.currentTimeMillis() - startTime) / 1000
+				+ "seconds");
 		setPath(path);
 		return path;
 	}
@@ -135,7 +144,8 @@ public class Colony {
 	}
 
 	/**
-	 * @param denied the denied to set
+	 * @param denied
+	 *            the denied to set
 	 */
 	public final void setDenied(HashSet<Path> denied) {
 		this.denied = denied;

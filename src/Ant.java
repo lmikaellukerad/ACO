@@ -11,13 +11,13 @@ import java.util.Random;
 public class Ant {
 	private ArrayList<Path> list;
 	private HashSet<Path> denied;
-	private ArrayList<Integer> actions;
 	private Path current;
 	private Path previous;
 	private Path destination;
 	private double p;
 
-	public Ant(double pheromones, Path path, Path destination, HashSet<Path> denied) {
+	public Ant(double pheromones, Path path, Path destination,
+			HashSet<Path> denied) {
 		p = pheromones;
 		visit(path);
 		this.destination = destination;
@@ -31,19 +31,16 @@ public class Ant {
 		if (!arrived()) {
 			ArrayList<Path> neighbours = current.getNeighbours();
 			ArrayList<Path> potential = new ArrayList<Path>();
-
 			for (Path n : neighbours) {
-
-//				if (!n.equals(previous) 
-//						&& !n.isClosed() 
-//						&& !denied.contains(n)
-//						&& !n.isOpen()) {
-				if (!n.equals(previous)
-						&& !denied.contains(n)) {
+				if (!n.equals(previous) && !denied.contains(n)) {
 					if (!n.isVisited()) {
 						visit(n);
 						return;
 					} else {
+						if (list.contains(n)) {
+							abort(n);
+							return;
+						}
 						if (!n.equals(destination)) {
 							total += n.getPheremone();
 							potential.add(n);
@@ -54,16 +51,12 @@ public class Ant {
 					}
 				}
 			}
+
 			if (potential.size() < 1) {
 				back();
 			}
-//			if (potential.size() == 1) {
-//				if (list.contains(potential.get(0)))
-//					back();
-//			}
 			double random = new Random().nextDouble();
 			for (Path n : potential) {
-
 				chance += (n.getPheremone() / total);
 				if (random < chance) {
 					visit(n);
@@ -71,20 +64,14 @@ public class Ant {
 				}
 			}
 		}
-		// }
-
 	}
 
 	public void updatePheremones() {
 		double updated = p / (list.size() - 1);
 		LinkedHashSet<Path> s = new LinkedHashSet<>(list);
-		for (Path n : s) {
+		for (Path n : list) {
 			n.increasePheremone(updated);
 		}
-	}
-
-	private void calculateActions() {
-
 	}
 
 	private void visit(Path n) {
@@ -94,24 +81,24 @@ public class Ant {
 		}
 		current = n;
 		current.setVisited(true);
-		if (arrived()) {
-			calculateActions();
-			// updatePheremones();
+
+	}
+
+	private void abort(Path path) {
+		current = list.get(list.size() - 1);
+		list.remove(list.size() - 1);
+		if (list.size() - 1 > 0) {
+			previous = list.get(list.size() - 1);
+		} else {
+			previous = null;
+		}
+		if (current.equals(path)) {
+			return;
+		} else {
+			abort(path);
 		}
 	}
 
-	private void abort() {
-		denied.add(current);
-		current = list.get(list.size() - 1);
-		list.remove(list.size() - 1);
-		previous = list.get(list.size() - 1);
-		if (current.isIntersection()) {
-			return;
-		} else {
-			abort();
-		}
-	}
-	
 	private void back() {
 		denied.add(current);
 		current = list.get(list.size() - 1);

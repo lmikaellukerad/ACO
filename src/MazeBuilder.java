@@ -11,7 +11,7 @@ public class MazeBuilder {
 	private Point end;
 	private MazeUI ui;
 	private ArrayList<String> data = new ArrayList<String>();
-	private final String difficulty = "hard";
+	private final String difficulty = "insane";
 
 	public static void main(String[] args) {
 		new MazeBuilder().launch();
@@ -53,11 +53,11 @@ public class MazeBuilder {
 			Path next = path.get(i + 1);
 			if (next.getX() > current.getX()) {
 				actions.add(0);
-			} else if (next.getY() > current.getY()) {
+			} else if (next.getY() < current.getY()) {
 				actions.add(1);
 			} else if (next.getX() < current.getX()) {
 				actions.add(2);
-			} else if (next.getY() < current.getY()) {
+			} else if (next.getY() > current.getY()) {
 				actions.add(3);
 			}
 		}
@@ -107,25 +107,41 @@ public class MazeBuilder {
 						Square n = squares[x + 1][y];
 						if (n instanceof Path) {
 							p.addNeighbour((Path) n);
+						} if (n instanceof Wall) {
+							p.addSurrounding((Wall) n);
 						}
+					} else {
+						p.addSurrounding(new Wall());
 					}
 					if (x - 1 >= 0) {
 						Square n = squares[x - 1][y];
 						if (n instanceof Path) {
 							p.addNeighbour((Path) n);
+						} if (n instanceof Wall) {
+							p.addSurrounding((Wall) n);
 						}
+					} else {
+						p.addSurrounding(new Wall());
 					}
 					if (y - 1 >= 0) {
 						Square n = squares[x][y - 1];
 						if (n instanceof Path) {
 							p.addNeighbour((Path) n);
+						} if (n instanceof Wall) {
+							p.addSurrounding((Wall) n);
 						}
+					} else {
+						p.addSurrounding(new Wall());
 					}
 					if (y + 1 < height) {
 						Square n = squares[x][y + 1];
 						if (n instanceof Path) {
 							p.addNeighbour((Path) n);
+						} if (n instanceof Wall) {
+							p.addSurrounding((Wall) n);
 						}
+					} else {
+						p.addSurrounding(new Wall());
 					}
 				}
 			}
