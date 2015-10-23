@@ -1,8 +1,10 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class MazeBuilder {
 
@@ -11,7 +13,7 @@ public class MazeBuilder {
 	private Point end;
 	private MazeUI ui;
 	private ArrayList<String> data = new ArrayList<String>();
-	private final String difficulty = "insane";
+	private final String difficulty = "hard";
 
 	public static void main(String[] args) {
 		new MazeBuilder().launch();
@@ -79,10 +81,10 @@ public class MazeBuilder {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				if (data.get(y).charAt(x) == '1') {
-					maze[x][y] = new Path();
-					maze[x][y].setX(x);
-					maze[x][y].setY(y);
-					((Path) maze[x][y]).setPheremone(1);
+					Path p = new Path();
+					p.setPos(new Point(x, y));
+					p.setPheremone(1);
+					maze[x][y] = p;
 				} else {
 					maze[x][y] = new Wall();
 				}
@@ -107,41 +109,25 @@ public class MazeBuilder {
 						Square n = squares[x + 1][y];
 						if (n instanceof Path) {
 							p.addNeighbour((Path) n);
-						} if (n instanceof Wall) {
-							p.addSurrounding((Wall) n);
 						}
-					} else {
-						p.addSurrounding(new Wall());
 					}
 					if (x - 1 >= 0) {
 						Square n = squares[x - 1][y];
 						if (n instanceof Path) {
 							p.addNeighbour((Path) n);
-						} if (n instanceof Wall) {
-							p.addSurrounding((Wall) n);
 						}
-					} else {
-						p.addSurrounding(new Wall());
 					}
 					if (y - 1 >= 0) {
 						Square n = squares[x][y - 1];
 						if (n instanceof Path) {
 							p.addNeighbour((Path) n);
-						} if (n instanceof Wall) {
-							p.addSurrounding((Wall) n);
 						}
-					} else {
-						p.addSurrounding(new Wall());
 					}
 					if (y + 1 < height) {
 						Square n = squares[x][y + 1];
 						if (n instanceof Path) {
 							p.addNeighbour((Path) n);
-						} if (n instanceof Wall) {
-							p.addSurrounding((Wall) n);
 						}
-					} else {
-						p.addSurrounding(new Wall());
 					}
 				}
 			}
@@ -150,21 +136,23 @@ public class MazeBuilder {
 	}
 
 	/**
-	 * Reads file and parses maze.
+	 * Reads file and returns a maze objects.
 	 * 
 	 * @param location
 	 *            location of the file
+	 * @return a maze object
 	 */
-	public Maze readFile(String location) {
+	public final Maze readFile(final String location) {
 		try {
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(location));
-			String line = bufferedReader.readLine();
+			File file = new File(location);
+			Scanner sc = new Scanner(file);
+			String line = sc.nextLine();
 			data.add(line);
-			while ((line = bufferedReader.readLine()) != null) {
-				line = line.replaceAll("\\s+", "");
+			while (sc.hasNextLine()) {
+				line = sc.nextLine().replaceAll("\\s+", "");
 				data.add(line);
 			}
-			bufferedReader.close();
+			sc.close();
 		} catch (IOException e) {
 			System.out.println("File not found");
 		}
@@ -174,12 +162,12 @@ public class MazeBuilder {
 	public Point readStartCoordinates(String location) {
 		Point p = null;
 		try {
-			BufferedReader bufferedReader = new BufferedReader(new FileReader(location));
-			String line = bufferedReader.readLine();
+			Scanner sc = new Scanner(new File(location));
+			String line = sc.nextLine();
 			line = line.replaceAll(",", "");
 			line = line.replaceAll(";", "");
 			String[] format = line.split("\\s+");
-			bufferedReader.close();
+			sc.close();
 			p = new Point(Integer.parseInt(format[0]), Integer.parseInt(format[1]));
 		} catch (IOException e) {
 			System.out.println("File not found");

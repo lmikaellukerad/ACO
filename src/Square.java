@@ -1,21 +1,35 @@
 
 public abstract class Square {
-	private int x;
-	private int y;
+	private Point pos; 
 	
-	protected final int getX() {
-		return x;
+	public final int getX() {
+		return pos.getX();
 	}
 
-	protected final void setX(int x) {
-		this.x = x;
+	public final void setX(int x) {
+		pos.setX(x);
 	}
 
-	protected final int getY() {
-		return y;
+	public final int getY() {
+		return pos.getY();
 	}
 
-	protected final void setY(int y) {
-		this.y = y;
+	public final void setY(int y) {
+		pos.setY(y);
+	}
+	
+	/**
+	 * @return the pos
+	 */
+	public final Point getPos() {
+		return pos;
+	}
+	
+	/**
+	 * 
+	 * @param pos
+	 */
+	public final void setPos(Point pos) {
+		this.pos = pos;
 	}
 }

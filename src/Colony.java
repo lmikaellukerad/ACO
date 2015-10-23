@@ -25,8 +25,7 @@ public class Colony {
 	private void initialize() {
 		ants = new ArrayList<Ant>();
 		for (int i = 0; i < antsNumber; i++) {
-			Ant a = new Ant(initialPheremone, maze.startPath(), maze.endPath(),
-					denied);
+			Ant a = new Ant(initialPheremone, maze.startPath(), maze.endPath());
 			ants.add(a);
 		}
 	}
@@ -59,11 +58,9 @@ public class Colony {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-
 				for (Ant a : ants) {
 					a.update();
 				}
-
 				if (completed()) {
 					break;
 				}
@@ -72,7 +69,6 @@ public class Colony {
 			for (Ant a : ants) {
 				if (a.arrived()) {
 					completed++;
-					
 					if (a.getList().size() < shortest) {
 						best = a;
 						shortest = a.getList().size();

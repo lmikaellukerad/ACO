@@ -1,6 +1,6 @@
 
 /**
- * Class representing a point in 2d space.
+ * Object representing a point in 2d space.
  * @author Luke
  *
  */
@@ -22,22 +22,33 @@ public class Point {
 	}
 
 	public String toString() {
-		String s = "x: " + x + " y: " + y;
+		String s = "(" + x + ", " + y + ")";
 		return s;
 	}
 
 	/**
 	 * @return the x
 	 */
-	protected final int getX() {
+	public final int getX() {
 		return x;
 	}
 
 	/**
 	 * @return the y
 	 */
-	protected final int getY() {
+	public final int getY() {
 		return y;
+	}
+	
+	/**
+	 * 
+	 */
+	public final boolean equals(Object other) {
+		if (other instanceof Point) {
+			Point o = (Point) other;
+			return (o.getX() == getX() && o.getY() == getY());
+		}
+		return false;
 	}
 
 }

@@ -19,7 +19,7 @@ public class MazePanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static final int SQUARE_SIZE = 9;
 	private static final Color BACKGROUND_COLOR = Color.BLACK;
-	private final boolean drawAnts = false;
+	private final boolean drawAnts = true;
 	private Colony maze;
 
 	public MazePanel(final Colony colony) {
@@ -60,7 +60,7 @@ public class MazePanel extends JPanel {
 		ArrayList<Ant> ants = colony.getAnts();
 		int cellW = window.width / maze.getWidth();
 		int cellH = window.height / maze.getHeight();
-		double maximum = 10;
+		double maximum = -1;
 		g.setColor(BACKGROUND_COLOR);
 		g.fillRect(0, 0, window.width, window.height);
 
@@ -78,17 +78,19 @@ public class MazePanel extends JPanel {
 				int cellY = y * cellH;
 
 				Square square = maze.squareAt(x, y);
+	
 				if (square instanceof Path) {
 					Path path = (Path) square;
 
-					if (path.getPheremone() > maximum
-							&& path.getPheremone() > 0.5) {
+					if (path.getPheremone() > maximum) {
 						maximum = path.getPheremone();
 					}
-					g.setColor(new Color(1f, (float) Math.min(1f,
+					g.setColor(new Color(1f, (float) Math.max(0f,
 							path.getPheremone() / maximum), 1f));
-					
-					if (colony.getDenied().contains(path)) {
+					if (maze.startPath().equals(square)) {
+						g.setColor(Color.BLUE);
+					}
+					if (maze.endPath().equals(square)) {
 						g.setColor(Color.RED);
 					}
 					if (colony.getPath().contains(path)) {
@@ -98,12 +100,6 @@ public class MazePanel extends JPanel {
 
 				} else {
 					g.setColor(Color.BLACK);
-				}
-				if (maze.getStart().getX() == x && maze.getStart().getY() == y) {
-					g.setColor(Color.BLUE);
-				}
-				if (maze.getEnd().getX() == x && maze.getEnd().getY() == y) {
-					g.setColor(Color.GREEN);
 				}
 
 				g.fillRect(cellX, cellY, cellW, cellH);

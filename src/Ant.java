@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Random;
 
@@ -10,19 +11,19 @@ import java.util.Random;
  */
 public class Ant {
 	private ArrayList<Path> list;
+
 	private HashSet<Path> denied;
 	private Path current;
 	private Path previous;
 	private Path destination;
-	private double p;
+	private final double p;
 
-	public Ant(double pheromones, Path path, Path destination,
-			HashSet<Path> denied) {
+	public Ant(double pheromones, Path start, Path destination) {
 		p = pheromones;
-		visit(path);
 		this.destination = destination;
 		list = new ArrayList<Path>();
-		this.denied = denied;
+		this.denied = new HashSet<Path>();
+		visit(start);
 	}
 
 	public void update() {
@@ -48,12 +49,13 @@ public class Ant {
 							visit(n);
 							return;
 						}
+
 					}
 				}
 			}
-
 			if (potential.size() < 1) {
 				back();
+				return;
 			}
 			double random = new Random().nextDouble();
 			for (Path n : potential) {
@@ -69,26 +71,23 @@ public class Ant {
 	public void updatePheremones() {
 		double updated = p / (list.size() - 1);
 		LinkedHashSet<Path> s = new LinkedHashSet<>(list);
-		for (Path n : list) {
+		for (Path n : s) {
 			n.increasePheremone(updated);
 		}
 	}
 
 	private void visit(Path n) {
-		if (current != null) {
-			list.add(current);
-			previous = current;
-		}
+		list.add(n);
+		previous = current;
 		current = n;
 		current.setVisited(true);
-
 	}
 
 	private void abort(Path path) {
-		current = list.get(list.size() - 1);
+		current = list.get(list.size() - 2);
 		list.remove(list.size() - 1);
-		if (list.size() - 1 > 0) {
-			previous = list.get(list.size() - 1);
+		if (list.size() - 2 > 0) {
+			previous = list.get(list.size() - 2);
 		} else {
 			previous = null;
 		}
@@ -97,13 +96,18 @@ public class Ant {
 		} else {
 			abort(path);
 		}
+
 	}
 
 	private void back() {
 		denied.add(current);
-		current = list.get(list.size() - 1);
+		current = list.get(list.size() - 2);
 		list.remove(list.size() - 1);
-		previous = list.get(list.size() - 1);
+		if (list.size() - 2 > 0) {
+			previous = list.get(list.size() - 2);
+		} else {
+			previous = null;
+		}
 	}
 
 	public boolean arrived() {

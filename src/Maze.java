@@ -1,6 +1,9 @@
+import java.util.ArrayList;
+
 public class Maze {
 
 	private Square[][] maze;
+	private ArrayList<Point> products;
 	private Point start;
 	private Point end;
 
@@ -65,6 +68,14 @@ public class Maze {
 	 */
 	public void setEnd(Point end) {
 		this.end = end;
+	}
+
+	public ArrayList<Point> getProducts() {
+		return products;
+	}
+
+	public void setProducts(ArrayList<Point> products) {
+		this.products = products;
 	}
 
 	public Square squareAt(int x, int y) {

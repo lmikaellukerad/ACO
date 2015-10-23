@@ -5,12 +5,10 @@ import java.util.HashSet;
 public class Path extends Square {
 	private double pheremone;
 	private ArrayList<Path> neighbours;
-	private ArrayList<Wall> surrounding;
 	private boolean visited;
 
 	public Path() {
 		neighbours = new ArrayList<Path>();
-		surrounding = new ArrayList<Wall>();
 		visited = false;
 	}
 	
@@ -28,7 +26,6 @@ public class Path extends Square {
 	
 	public void increasePheremone(double factor) {
 		setPheremone(pheremone + factor);
-		//System.out.println(pheremone);
 	}
 	
 	public String toString() {
@@ -42,24 +39,6 @@ public class Path extends Square {
 
 	public ArrayList<Path> getNeighbours() {
 		return neighbours;
-	}
-
-	public void addSurrounding(Wall wall) {
-		surrounding.add(wall);
-	}
-	
-	/**
-	 * @return the surrounding
-	 */
-	public ArrayList<Wall> getSurrounding() {
-		return surrounding;
-	}
-
-	/**
-	 * @param surrounding the surrounding to set
-	 */
-	public void setSurrounding(ArrayList<Wall> surrounding) {
-		this.surrounding = surrounding;
 	}
 
 	public boolean isVisited() {
